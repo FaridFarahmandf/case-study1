@@ -38,7 +38,7 @@ final class CallArbiter<T> extends AtomicInteger implements Subscription, Produc
   private final transient Subscriber<? super Response<T>> subscriber;
 
   private volatile boolean unsubscribed;
-  private volatile transient Response<T> response;
+  private transient volatile Response<T> response;
 
   CallArbiter(Call<T> call, Subscriber<? super Response<T>> subscriber) {
     super(STATE_WAITING);
