@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import org.junit.Test;
 import retrofit2.Response;
+import retrofit_two.adapter.rxjava2.Result;
 
 public final class ResultTest {
   @Test

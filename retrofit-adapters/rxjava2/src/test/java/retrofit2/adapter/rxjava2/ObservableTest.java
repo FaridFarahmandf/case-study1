@@ -29,6 +29,9 @@ import org.junit.Test;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit_two.adapter.rxjava2.HttpException;
+import retrofit_two.adapter.rxjava2.Result;
+import retrofit_two.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public final class ObservableTest {
   @Rule public final MockWebServer server = new MockWebServer();
