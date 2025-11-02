@@ -96,56 +96,90 @@ public final class RxJava2CallAdapterFactory extends CallAdapter.Factory {
     Class<?> rawType = getRawType(returnType);
 
     if (rawType == Completable.class) {
-      // Completable is not parameterized (which is what the rest of this method deals with) so it
-      // can only be created with a single configuration.
-      return new RxJava2CallAdapter(
-          Void.class, scheduler, isAsync, false, true, false, false, false, true);
+      return createCompletableAdapter();
     }
 
-    boolean isFlowable = rawType == Flowable.class;
-    boolean isSingle = rawType == Single.class;
-    boolean isMaybe = rawType == Maybe.class;
-    if (rawType != Observable.class && !isFlowable && !isSingle && !isMaybe) {
+    if (!isSupportedRxType(rawType)) {
       return null;
     }
 
-    boolean isResult = false;
-    boolean isBody = false;
-    Type responseType;
+    Type observableType = extractObservableType(returnType, rawType);
+    ParsedType parsedType = parseObservableType(observableType);
+
+    return new RxJava2CallAdapter(
+        parsedType.responseType,
+        scheduler,
+        isAsync,
+        parsedType.isResult,
+        parsedType.isBody,
+        rawType == Flowable.class,
+        rawType == Single.class,
+        rawType == Maybe.class,
+        false);
+  }
+
+  private CallAdapter<?, ?> createCompletableAdapter() {
+    return new RxJava2CallAdapter(
+        Void.class, scheduler, isAsync, false, true, false, false, false, true);
+  }
+
+  private boolean isSupportedRxType(Class<?> rawType) {
+    return rawType == Observable.class
+        || rawType == Flowable.class
+        || rawType == Single.class
+        || rawType == Maybe.class;
+  }
+
+  private Type extractObservableType(Type returnType, Class<?> rawType) {
     if (!(returnType instanceof ParameterizedType)) {
-      String name =
-          isFlowable ? "Flowable" : isSingle ? "Single" : isMaybe ? "Maybe" : "Observable";
+      String name = rawType.getSimpleName();
       throw new IllegalStateException(
           name
-              + " return type must be parameterized"
-              + " as "
+              + " return type must be parameterized as "
               + name
               + "<Foo> or "
               + name
               + "<? extends Foo>");
     }
+    return getParameterUpperBound(0, (ParameterizedType) returnType);
+  }
 
-    Type observableType = getParameterUpperBound(0, (ParameterizedType) returnType);
+  private ParsedType parseObservableType(Type observableType) {
     Class<?> rawObservableType = getRawType(observableType);
+
     if (rawObservableType == Response.class) {
-      if (!(observableType instanceof ParameterizedType)) {
-        throw new IllegalStateException(
-            "Response must be parameterized" + " as Response<Foo> or Response<? extends Foo>");
-      }
-      responseType = getParameterUpperBound(0, (ParameterizedType) observableType);
-    } else if (rawObservableType == Result.class) {
-      if (!(observableType instanceof ParameterizedType)) {
-        throw new IllegalStateException(
-            "Result must be parameterized" + " as Result<Foo> or Result<? extends Foo>");
-      }
-      responseType = getParameterUpperBound(0, (ParameterizedType) observableType);
-      isResult = true;
-    } else {
-      responseType = observableType;
-      isBody = true;
+      return new ParsedType(getInnerType(observableType, "Response"), false, false);
     }
 
-    return new RxJava2CallAdapter(
-        responseType, scheduler, isAsync, isResult, isBody, isFlowable, isSingle, isMaybe, false);
+    if (rawObservableType == Result.class) {
+      return new ParsedType(getInnerType(observableType, "Result"), true, false);
+    }
+
+    return new ParsedType(observableType, false, true);
+  }
+
+  private Type getInnerType(Type type, String wrapperName) {
+    if (!(type instanceof ParameterizedType)) {
+      throw new IllegalStateException(
+          wrapperName
+              + " must be parameterized as "
+              + wrapperName
+              + "<Foo> or "
+              + wrapperName
+              + "<? extends Foo>");
+    }
+    return getParameterUpperBound(0, (ParameterizedType) type);
+  }
+
+  private static final class ParsedType {
+    final Type responseType;
+    final boolean isResult;
+    final boolean isBody;
+
+    ParsedType(Type responseType, boolean isResult, boolean isBody) {
+      this.responseType = responseType;
+      this.isResult = isResult;
+      this.isBody = isBody;
+    }
   }
 }
