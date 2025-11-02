@@ -30,7 +30,6 @@ import org.junit.Test;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit_two.adapter.java8.Java8CallAdapterFactory;
 
 public final class Java8CallAdapterFactoryTest {
   private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
@@ -85,7 +84,7 @@ public final class Java8CallAdapterFactoryTest {
 
   @Test
   public void rawTypeThrows() {
-    Type observableType = new TypeToken<CompletableFuture>() {}.getType();
+ Type observableType = new TypeToken<CompletableFuture<String>>() {}.getType();
     try {
       factory.get(observableType, NO_ANNOTATIONS, retrofit);
       fail();

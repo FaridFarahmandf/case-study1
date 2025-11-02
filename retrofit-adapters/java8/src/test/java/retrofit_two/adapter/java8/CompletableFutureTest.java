@@ -30,8 +30,6 @@ import org.junit.Test;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
-import retrofit_two.adapter.java8.HttpException;
-import retrofit_two.adapter.java8.Java8CallAdapterFactory;
 
 public final class CompletableFutureTest {
   @Rule public final MockWebServer server = new MockWebServer();
