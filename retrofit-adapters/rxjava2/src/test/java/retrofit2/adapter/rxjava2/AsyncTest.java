@@ -47,6 +47,7 @@ import org.junit.Test;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.CompletableThrowingTest.ForwardingCompletableObserver;
 import retrofit2.http.GET;
+import retrofit_two.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public final class AsyncTest {
   @Rule public final MockWebServer server = new MockWebServer();

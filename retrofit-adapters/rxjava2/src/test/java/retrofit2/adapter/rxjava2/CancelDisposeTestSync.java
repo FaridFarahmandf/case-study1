@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit_two.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public final class CancelDisposeTestSync {
   @Rule public final MockWebServer server = new MockWebServer();

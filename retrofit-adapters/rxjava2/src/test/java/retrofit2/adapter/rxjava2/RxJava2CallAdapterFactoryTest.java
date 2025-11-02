@@ -32,6 +32,8 @@ import org.junit.Test;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit_two.adapter.rxjava2.Result;
+import retrofit_two.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public class RxJava2CallAdapterFactoryTest {
   private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
