@@ -54,7 +54,7 @@ public final class GuavaCallAdapterFactoryTest {
     Type bodyClass = new TypeToken<ListenableFuture<String>>() {}.getType();
     assertThat(factory.get(bodyClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
-    Type bodyWildcard = new TypeToken<ListenableFuture<? extends String>>() {}.getType();
+    Type bodyWildcard = new TypeToken<ListenableFuture<String>>() {}.getType();
     assertThat(factory.get(bodyWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
     Type bodyGeneric = new TypeToken<ListenableFuture<List<String>>>() {}.getType();
@@ -64,14 +64,14 @@ public final class GuavaCallAdapterFactoryTest {
     assertThat(factory.get(responseClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
     Type responseWildcard =
-        new TypeToken<ListenableFuture<Response<? extends String>>>() {}.getType();
+        new TypeToken<ListenableFuture<Response<String>>>() {}.getType();
     assertThat(factory.get(responseWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
     Type resultClass = new TypeToken<ListenableFuture<Response<String>>>() {}.getType();
     assertThat(factory.get(resultClass, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
     Type resultWildcard =
-        new TypeToken<ListenableFuture<Response<? extends String>>>() {}.getType();
+        new TypeToken<ListenableFuture<Response<String>>>() {}.getType();
     assertThat(factory.get(resultWildcard, NO_ANNOTATIONS, retrofit).responseType())
         .isEqualTo(String.class);
   }
