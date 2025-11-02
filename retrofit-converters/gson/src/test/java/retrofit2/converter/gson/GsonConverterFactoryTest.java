@@ -111,7 +111,6 @@ public final class GsonConverterFactoryTest {
           default:
             jsonReader.skipValue();
             break;
-          
         }
       }
 
