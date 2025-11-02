@@ -108,6 +108,10 @@ public final class GsonConverterFactoryTest {
           case "name":
             name = jsonReader.nextString();
             break;
+          default:
+            jsonReader.skipValue();
+            break;
+          
         }
       }
 
