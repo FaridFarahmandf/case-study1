@@ -25,7 +25,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 abstract class ParameterHandler<T> {
-  private static final String NAME_NULL_ERROR = "name == null";
+  private static final String NAME_NULL_ERROR = NAME_NULL_ERROR;
 
   abstract void apply(RequestBuilder builder, @Nullable T value) throws IOException;
 
@@ -80,7 +80,7 @@ abstract class ParameterHandler<T> {
     private final boolean allowUnsafeNonAsciiValues;
 
     Header(String name, Converter<T, String> valueConverter, boolean allowUnsafeNonAsciiValues) {
-      this.name = Objects.requireNonNull(name, "name == null");
+      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
       this.valueConverter = valueConverter;
       this.allowUnsafeNonAsciiValues = allowUnsafeNonAsciiValues;
     }
@@ -106,7 +106,7 @@ abstract class ParameterHandler<T> {
     Path(Method method, int p, String name, Converter<T, String> valueConverter, boolean encoded) {
       this.method = method;
       this.p = p;
-      this.name = Objects.requireNonNull(name, "name == null");
+      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
       this.valueConverter = valueConverter;
       this.encoded = encoded;
     }
@@ -127,7 +127,7 @@ abstract class ParameterHandler<T> {
     private final boolean encoded;
 
     Query(String name, Converter<T, String> valueConverter, boolean encoded) {
-      this.name = Objects.requireNonNull(name, "name == null");
+      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
       this.valueConverter = valueConverter;
       this.encoded = encoded;
     }
@@ -271,7 +271,7 @@ abstract class ParameterHandler<T> {
     private final boolean encoded;
 
     Field(String name, Converter<T, String> valueConverter, boolean encoded) {
-      this.name = Objects.requireNonNull(name, "name == null");
+      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
       this.valueConverter = valueConverter;
       this.encoded = encoded;
     }
