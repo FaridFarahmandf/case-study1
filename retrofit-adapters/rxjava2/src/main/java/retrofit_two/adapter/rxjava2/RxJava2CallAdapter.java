@@ -29,32 +29,38 @@ final class RxJava2CallAdapter<R> implements CallAdapter<R, Object> {
   private final Type responseType;
   private final @Nullable Scheduler scheduler;
   private final boolean isAsync;
-  private final boolean isResult;
-  private final boolean isBody;
-  private final boolean isFlowable;
-  private final boolean isSingle;
-  private final boolean isMaybe;
-  private final boolean isCompletable;
+  private final AdapterConfig config;
 
-  RxJava2CallAdapter(
-      Type responseType,
-      @Nullable Scheduler scheduler,
-      boolean isAsync,
-      boolean isResult,
-      boolean isBody,
-      boolean isFlowable,
-      boolean isSingle,
-      boolean isMaybe,
-      boolean isCompletable) {
+  static final class AdapterConfig {
+    final boolean isResult;
+    final boolean isBody;
+    final boolean isFlowable;
+    final boolean isSingle;
+    final boolean isMaybe;
+    final boolean isCompletable;
+
+    AdapterConfig(
+        boolean isResult,
+        boolean isBody,
+        boolean isFlowable,
+        boolean isSingle,
+        boolean isMaybe,
+        boolean isCompletable) {
+      this.isResult = isResult;
+      this.isBody = isBody;
+      this.isFlowable = isFlowable;
+      this.isSingle = isSingle;
+      this.isMaybe = isMaybe;
+      this.isCompletable = isCompletable;
+    }
+  }
+
+  RxJava2CallAdapter(Type responseType, @Nullable Scheduler scheduler, boolean isAsync,
+      AdapterConfig config) {
     this.responseType = responseType;
     this.scheduler = scheduler;
     this.isAsync = isAsync;
-    this.isResult = isResult;
-    this.isBody = isBody;
-    this.isFlowable = isFlowable;
-    this.isSingle = isSingle;
-    this.isMaybe = isMaybe;
-    this.isCompletable = isCompletable;
+    this.config = config;
   }
 
   @Override
@@ -68,9 +74,9 @@ final class RxJava2CallAdapter<R> implements CallAdapter<R, Object> {
         isAsync ? new CallEnqueueObservable<>(call) : new CallExecuteObservable<>(call);
 
     Observable<?> observable;
-    if (isResult) {
+    if (config.isResult) {
       observable = new ResultObservable<>(responseObservable);
-    } else if (isBody) {
+    } else if (config.isBody) {
       observable = new BodyObservable<>(responseObservable);
     } else {
       observable = responseObservable;
@@ -80,18 +86,18 @@ final class RxJava2CallAdapter<R> implements CallAdapter<R, Object> {
       observable = observable.subscribeOn(scheduler);
     }
 
-    if (isFlowable) {
+  if (config.isFlowable) {
       // We only ever deliver a single value, and the RS spec states that you MUST request at least
       // one element which means we never need to honor backpressure.
       return observable.toFlowable(BackpressureStrategy.MISSING);
     }
-    if (isSingle) {
+    if (config.isSingle) {
       return observable.singleOrError();
     }
-    if (isMaybe) {
+    if (config.isMaybe) {
       return observable.singleElement();
     }
-    if (isCompletable) {
+    if (config.isCompletable) {
       return observable.ignoreElements();
     }
     return RxJavaPlugins.onAssembly(observable);
