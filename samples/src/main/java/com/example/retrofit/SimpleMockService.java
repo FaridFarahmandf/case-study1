@@ -21,6 +21,7 @@ import retrofit2.mock.NetworkBehavior;
  * This re-uses the GitHub service from {@link SimpleService} for its mocking.
  */
 public final class SimpleMockService {
+  private static final String PICASSO_String = "picasso";
   /** A mock implementation of the {@link GitHub} API interface. */
   static final class MockGitHub implements GitHub {
     private final BehaviorDelegate<GitHub> delegate;
@@ -34,8 +35,8 @@ public final class SimpleMockService {
       addContributor("square", "retrofit", "John Doe", 12);
       addContributor("square", "retrofit", "Bob Smith", 2);
       addContributor("square", "retrofit", "Big Bird", 40);
-      addContributor("square", "picasso", "Proposition Joe", 39);
-      addContributor("square", "picasso", "Keiser Soze", 152);
+      addContributor("square", PICASSO_String, "Proposition Joe", 39);
+      addContributor("square", PICASSO_String, "Keiser Soze", 152);
     }
 
     @Override
@@ -80,19 +81,19 @@ public final class SimpleMockService {
 
     // Query for some contributors for a few repositories.
     printContributors(gitHub, "square", "retrofit");
-    printContributors(gitHub, "square", "picasso");
+  printContributors(gitHub, "square", PICASSO_String);
 
     // Using the mock-only methods, add some additional data.
     System.out.println("Adding more mock data...\n");
     gitHub.addContributor("square", "retrofit", "Foo Bar", 61);
-    gitHub.addContributor("square", "picasso", "Kit Kat", 53);
+  gitHub.addContributor("square", PICASSO_String, "Kit Kat", 53);
 
     // Reduce the delay to make the next calls complete faster.
     behavior.setDelay(500, TimeUnit.MILLISECONDS);
 
     // Query for the contributors again so we can see the mock data that was added.
     printContributors(gitHub, "square", "retrofit");
-    printContributors(gitHub, "square", "picasso");
+  printContributors(gitHub, "square", PICASSO_String);
   }
 
   private static void printContributors(GitHub gitHub, String owner, String repo)
