@@ -80,7 +80,7 @@ abstract class ParameterHandler<T> {
     private final boolean allowUnsafeNonAsciiValues;
 
     Header(String name, Converter<T, String> valueConverter, boolean allowUnsafeNonAsciiValues) {
-      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
+      this.name = Objects.requireNonNull(name, "name == null");
       this.valueConverter = valueConverter;
       this.allowUnsafeNonAsciiValues = allowUnsafeNonAsciiValues;
     }
@@ -106,7 +106,7 @@ abstract class ParameterHandler<T> {
     Path(Method method, int p, String name, Converter<T, String> valueConverter, boolean encoded) {
       this.method = method;
       this.p = p;
-      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
+      this.name = Objects.requireNonNull(name, "name == null");
       this.valueConverter = valueConverter;
       this.encoded = encoded;
     }
@@ -127,7 +127,7 @@ abstract class ParameterHandler<T> {
     private final boolean encoded;
 
     Query(String name, Converter<T, String> valueConverter, boolean encoded) {
-      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
+      this.name = Objects.requireNonNull(name, "name == null");
       this.valueConverter = valueConverter;
       this.encoded = encoded;
     }
@@ -271,7 +271,7 @@ abstract class ParameterHandler<T> {
     private final boolean encoded;
 
     Field(String name, Converter<T, String> valueConverter, boolean encoded) {
-      this.name = Objects.requireNonNull(name, NAME_NULL_ERROR);
+      this.name = Objects.requireNonNull(name, "name == null");
       this.valueConverter = valueConverter;
       this.encoded = encoded;
     }
