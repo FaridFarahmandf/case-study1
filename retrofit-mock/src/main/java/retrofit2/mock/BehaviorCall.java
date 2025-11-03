@@ -48,10 +48,10 @@ final class BehaviorCall<T> implements Call<T> {
   }
 
   @SuppressWarnings("CloneDoesntCallSuperClone") // We are a final type & this saves clearing state.
-  @Override
-  public Call<T> clone() {
+  public BehaviorCall<T> copy() {
     return new BehaviorCall<>(behavior, backgroundExecutor, delegate.clone());
   }
+
 
   @Override
   public Request request() {
