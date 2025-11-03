@@ -106,21 +106,25 @@ public final class RxJava2CallAdapterFactory extends CallAdapter.Factory {
     Type observableType = extractObservableType(returnType, rawType);
     ParsedType parsedType = parseObservableType(observableType);
 
-    return new RxJava2CallAdapter(
-        parsedType.responseType,
-        scheduler,
-        isAsync,
-        parsedType.isResult,
-        parsedType.isBody,
-        rawType == Flowable.class,
-        rawType == Single.class,
-        rawType == Maybe.class,
-        false);
+  return new RxJava2CallAdapter(
+    parsedType.responseType,
+    scheduler,
+    isAsync,
+    new RxJava2CallAdapter.AdapterConfig(
+      parsedType.isResult,
+      parsedType.isBody,
+      rawType == Flowable.class,
+      rawType == Single.class,
+      rawType == Maybe.class,
+      false));
   }
 
   private CallAdapter<?, ?> createCompletableAdapter() {
-    return new RxJava2CallAdapter(
-        Void.class, scheduler, isAsync, false, true, false, false, false, true);
+  return new RxJava2CallAdapter(
+    Void.class,
+    scheduler,
+    isAsync,
+    new RxJava2CallAdapter.AdapterConfig(false, true, false, false, false, true));
   }
 
   private boolean isSupportedRxType(Class<?> rawType) {
