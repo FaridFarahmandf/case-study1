@@ -127,10 +127,9 @@ public final class ObservableThrowingSafeSubscriberTest {
             new RxJavaErrorHandler() {
               @Override
               public void handleError(Throwable throwable) {
-                if (throwable instanceof OnErrorFailedException) {
-                  if (!pluginRef.compareAndSet(null, throwable)) {
-                    throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-                  }
+                if (throwable instanceof OnErrorFailedException
+                    && !pluginRef.compareAndSet(null, throwable)) {
+                  throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
                 }
               }
             });
@@ -217,10 +216,9 @@ public final class ObservableThrowingSafeSubscriberTest {
             new RxJavaErrorHandler() {
               @Override
               public void handleError(Throwable throwable) {
-                if (throwable instanceof OnErrorFailedException) {
-                  if (!pluginRef.compareAndSet(null, throwable)) {
-                    throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-                  }
+                if (throwable instanceof OnErrorFailedException
+                    && !pluginRef.compareAndSet(null, throwable)) {
+                  throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
                 }
               }
             });
@@ -274,10 +272,9 @@ public final class ObservableThrowingSafeSubscriberTest {
             new RxJavaErrorHandler() {
               @Override
               public void handleError(Throwable throwable) {
-                if (throwable instanceof OnCompletedFailedException) {
-                  if (!pluginRef.compareAndSet(null, throwable)) {
-                    throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-                  }
+                if (throwable instanceof OnCompletedFailedException
+                    && !pluginRef.compareAndSet(null, throwable)) {
+                  throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
                 }
               }
             });
@@ -308,10 +305,9 @@ public final class ObservableThrowingSafeSubscriberTest {
             new RxJavaErrorHandler() {
               @Override
               public void handleError(Throwable throwable) {
-                if (throwable instanceof OnErrorFailedException) {
-                  if (!pluginRef.compareAndSet(null, throwable)) {
-                    throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
-                  }
+                if (throwable instanceof OnErrorFailedException
+                    && !pluginRef.compareAndSet(null, throwable)) {
+                  throw Exceptions.propagate(throwable); // Don't swallow secondary errors!
                 }
               }
             });
