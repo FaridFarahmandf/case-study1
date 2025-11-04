@@ -132,9 +132,27 @@ public final class Calls {
     }
 
     @Override
-    public Call<T> clone() {
-      return new FakeCall<>(response, error);
+    public class DeferredCall<T> implements Call<T> {
+      private final Callable<Call<T>> callable;
+      private @Nullable Call<T> delegate;
+
+      // Normal constructor
+      public DeferredCall(Callable<Call<T>> callable) {
+        this.callable = callable;
+      }
+
+      // Copy constructor
+      public DeferredCall(DeferredCall<T> other) {
+        this.callable = other.callable;
+        this.delegate = other.delegate;
+      }
+
+      // Replace clone() with copy()
+      public DeferredCall<T> copy() {
+        return new DeferredCall<>(this);
+      }
     }
+
 
     @Override
     public Request request() {
