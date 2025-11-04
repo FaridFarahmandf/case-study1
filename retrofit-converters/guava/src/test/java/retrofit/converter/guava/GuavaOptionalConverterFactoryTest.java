@@ -78,28 +78,29 @@ public final class GuavaOptionalConverterFactoryTest {
   public void delegates() throws IOException {
     final Object object = new Object();
     Retrofit retrofit =
-        new Retrofit.Builder()
-            .baseUrl(server.url("/"))
-            .addConverterFactory(
-                new Converter.Factory() {
-                  @Nullable
-                  @Override
-                  public Converter<ResponseBody, Object> responseBodyConverter(
-                      Type type, Annotation[] annotations, Retrofit retrofit) {
-                    if (getRawType(type) != Object.class) {
-                      return null;
-                    }
-                    return value -> object;
-                  }
-                })
-            .addConverterFactory(GuavaOptionalConverterFactory.create())
-            .build();
+      new Retrofit.Builder()
+        .baseUrl(server.url("/"))
+        .addConverterFactory(
+          new Converter.Factory() {
+            @Nullable
+            @Override
+            public Converter<ResponseBody, Object> responseBodyConverter(
+              Type type, Annotation[] annotations, Retrofit retrofit) {
+              if (getRawType(type) != Object.class) {
+                return null;
+              }
+              return value -> object;
+            }
+          })
+        .addConverterFactory(GuavaOptionalConverterFactory.create())
+        .build();
 
-    server.enqueue(new MockResponse());
+    // ✅ Rename variable here to avoid shadowing the class field
+    Service localService = retrofit.create(Service.class);
 
-    Service service = retrofit.create(Service.class);
-    Optional<Object> optional = service.optional().execute().body();
+    Optional<Object> optional = localService.optional().execute().body();
     assertThat(optional).isNotNull();
     assertThat(optional.get()).isSameInstanceAs(object);
   }
+
 }
