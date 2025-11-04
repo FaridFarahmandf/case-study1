@@ -96,61 +96,63 @@ public final class RxJava3CallAdapterFactory extends CallAdapter.Factory {
   }
 
   @Override
+
   public @Nullable CallAdapter<?, ?> get(
-      Type returnType, Annotation[] annotations, Retrofit retrofit) {
+    Type returnType, Annotation[] annotations, Retrofit retrofit) {
+
     Class<?> rawType = getRawType(returnType);
 
     if (rawType == Completable.class) {
-      // Completable is not parameterized (which is what the rest of this method deals with) so it
-      // can only be created with a single configuration.
-      return new RxJava3CallAdapter(
-          Void.class, scheduler, isAsync, false, true, false, false, false, true);
+      return createCompletableAdapter();
     }
 
     boolean isFlowable = rawType == Flowable.class;
     boolean isSingle = rawType == Single.class;
     boolean isMaybe = rawType == Maybe.class;
-    if (rawType != Observable.class && !isFlowable && !isSingle && !isMaybe) {
+
+    if (!isSupportedType(rawType, isFlowable, isSingle, isMaybe)) {
       return null;
     }
 
-    boolean isResult = false;
-    boolean isBody = false;
-    Type responseType;
     if (!(returnType instanceof ParameterizedType)) {
-      String name;
-      if (isFlowable) {
-        name = "Flowable";
-      } else if (isSingle) {
-        name = "Single";
-      } else if (isMaybe) {
-        name = "Maybe";
-      } else {
-        name = "Observable";
-      }
-      throw new IllegalStateException(
-          name
-              + " return type must be parameterized"
-              + " as "
-              + name
-              + "<Foo> or "
-              + name
-              + "<? extends Foo>");
+      throw createUnparameterizedTypeException(isFlowable, isSingle, isMaybe);
     }
 
     Type observableType = getParameterUpperBound(0, (ParameterizedType) returnType);
+    return createRxJava3Adapter(observableType, rawType);
+  }
+
+// --- Helper methods below ---
+
+  private boolean isSupportedType(Class<?> rawType, boolean isFlowable, boolean isSingle, boolean isMaybe) {
+    return rawType == Observable.class || isFlowable || isSingle || isMaybe;
+  }
+
+  private IllegalStateException createUnparameterizedTypeException(
+    boolean isFlowable, boolean isSingle, boolean isMaybe) {
+
+    String name = isFlowable ? "Flowable" : isSingle ? "Single" : isMaybe ? "Maybe" : "Observable";
+    return new IllegalStateException(
+      name + " return type must be parameterized as " + name + "<Foo> or " + name + "<? extends Foo>");
+  }
+
+  private CallAdapter<?, ?> createCompletableAdapter() {
+    return new RxJava3CallAdapter(
+      Void.class, scheduler, isAsync, false, true, false, false, false, true);
+  }
+
+  private CallAdapter<?, ?> createRxJava3Adapter(Type observableType, Class<?> rawType) {
+    boolean isResult = false;
+    boolean isBody = false;
+    Type responseType;
+
     Class<?> rawObservableType = getRawType(observableType);
+
     if (rawObservableType == Response.class) {
-      if (!(observableType instanceof ParameterizedType)) {
-        throw new IllegalStateException(
-            "Response must be parameterized" + " as Response<Foo> or Response<? extends Foo>");
-      }
+      checkParameterizedType(observableType, "Response");
       responseType = getParameterUpperBound(0, (ParameterizedType) observableType);
     } else if (rawObservableType == Result.class) {
-      if (!(observableType instanceof ParameterizedType)) {
-        throw new IllegalStateException(
-            "Result must be parameterized" + " as Result<Foo> or Result<? extends Foo>");
-      }
+      checkParameterizedType(observableType, "Result");
       responseType = getParameterUpperBound(0, (ParameterizedType) observableType);
       isResult = true;
     } else {
@@ -158,7 +160,11 @@ public final class RxJava3CallAdapterFactory extends CallAdapter.Factory {
       isBody = true;
     }
 
-    return new RxJava3CallAdapter(
-        responseType, scheduler, isAsync, isResult, isBody, isFlowable, isSingle, isMaybe, false);
+    return new RxJava3CallAdapter(responseType, scheduler, isAsync, isResult, isBody, false, false, false, false);
   }
-}
+
+  private void checkParameterizedType(Type type, String name) {
+    if (!(type instanceof ParameterizedType)) {
+      throw new IllegalStateException(name + " must be parameterized as " + name + "<Foo> or " + name + "<? extends Foo>");
+    }
+  }
