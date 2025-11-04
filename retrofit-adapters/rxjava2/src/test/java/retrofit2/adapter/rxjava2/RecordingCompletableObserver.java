@@ -36,7 +36,10 @@ final class RecordingCompletableObserver implements CompletableObserver {
   private RecordingCompletableObserver() {}
 
   @Override
-  public void onSubscribe(Disposable disposable) {}
+  public void onSubscribe(Disposable disposable) {
+    // No-op: This test observer does not track the Disposable subscription,
+    // as it only records completion and error events for verification purposes.
+  }
 
   @Override
   public void onComplete() {
@@ -59,16 +62,16 @@ final class RecordingCompletableObserver implements CompletableObserver {
   public Throwable takeError() {
     Notification<?> notification = takeNotification();
     assertWithMessage("Expected onError event but was " + notification)
-        .that(notification.isOnError())
-        .isTrue();
+      .that(notification.isOnError())
+      .isTrue();
     return notification.getError();
   }
 
   public void assertComplete() {
     Notification<?> notification = takeNotification();
     assertWithMessage("Expected onCompleted event but was " + notification)
-        .that(notification.isOnComplete())
-        .isTrue();
+      .that(notification.isOnComplete())
+      .isTrue();
     assertNoEvents();
   }
 
