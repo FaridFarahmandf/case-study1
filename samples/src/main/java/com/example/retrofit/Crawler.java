@@ -6,12 +6,6 @@
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package com.example.retrofit;
 
@@ -86,6 +80,26 @@ public final class Crawler {
 
   public Crawler(PageService pageService) {
     this.pageService = pageService;
+  }
+
+  /** ---------------------------- */
+  /**      SSRF PROTECTION         */
+  /** ---------------------------- */
+  private static boolean isPrivateAddress(HttpUrl url) {
+    String host = url.host();
+
+    // localhost
+    if (host.equals("localhost") || host.equals("127.0.0.1")) return true;
+
+    // IPv4 private ranges
+    if (host.startsWith("10.")) return true;
+    if (host.matches("^172\\.(1[6-9]|2\\d|3[0-1])\\..*")) return true;
+    if (host.startsWith("192.168.")) return true;
+
+    // Cloud metadata endpoints
+    if (host.equals("169.254.169.254")) return true;
+
+    return false;
   }
 
   public void crawlPage(HttpUrl url) {
