@@ -5,22 +5,42 @@
 navigationPageText = fetch(pathToRoot + "navigation.html").then(response => response.text())
 
 displayNavigationFromPage = () => {
-    navigationPageText.then(data => {
-        document.getElementById("sideMenu").innerHTML = data;
-    }).then(() => {
-        document.querySelectorAll(".toc--row > a").forEach(link => {
-            link.setAttribute("href", pathToRoot + link.getAttribute("href"));
+    navigationPageText
+        .then(rawHtml => {
+            // Parse the HTML safely
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(rawHtml, "text/html");
+
+            const sideMenu = document.getElementById("sideMenu");
+
+            // Clear old content
+            while (sideMenu.firstChild) {
+                sideMenu.removeChild(sideMenu.firstChild);
+            }
+
+            // Append sanitized DOM nodes
+            Array.from(doc.body.childNodes).forEach(node => {
+                sideMenu.appendChild(node.cloneNode(true));
+            });
         })
-    }).then(() => {
-        document.querySelectorAll(".toc--part").forEach(nav => {
-            if (!nav.classList.contains("toc--part_hidden"))
-                nav.classList.add("toc--part_hidden")
+        .then(() => {
+            document.querySelectorAll(".toc--row > a").forEach(link => {
+                link.setAttribute("href", pathToRoot + link.getAttribute("href"));
+            });
         })
-    }).then(() => {
-        revealNavigationForCurrentPage()
-    }).then(() => {
-        scrollNavigationToSelectedElement()
-    })
+        .then(() => {
+            document.querySelectorAll(".toc--part").forEach(nav => {
+                if (!nav.classList.contains("toc--part_hidden"))
+                    nav.classList.add("toc--part_hidden");
+            });
+        })
+        .then(() => {
+            revealNavigationForCurrentPage()
+        })
+        .then(() => {
+            scrollNavigationToSelectedElement()
+        });
+
     document.querySelectorAll('.footer a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -29,7 +49,7 @@ displayNavigationFromPage = () => {
             });
         });
     });
-}
+};
 
 revealNavigationForCurrentPage = () => {
     let pageId = document.getElementById("content").attributes["pageIds"].value.toString();
