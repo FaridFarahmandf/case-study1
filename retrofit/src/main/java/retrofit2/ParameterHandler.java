@@ -25,7 +25,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 abstract class ParameterHandler<T> {
-  private static final String NAME_NULL_ERROR = NAME_NULL_ERROR;
+  private static final String NAME_NULL_ERROR = "name == null";
 
   abstract void apply(RequestBuilder builder, @Nullable T value) throws IOException;
 
