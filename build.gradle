@@ -118,3 +118,15 @@ tasks.register('copyWebsiteDocs', Copy) {
     }
   }
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle:12.1.9'
+    }
+}
+
+apply plugin: 'org.owasp.dependencycheck'
